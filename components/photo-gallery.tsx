@@ -81,7 +81,7 @@ export function PhotoGallery() {
   return (
     <section className="flex flex-col items-center gap-8 sm:gap-10 px-4 w-full max-w-3xl mx-auto">
       {/* Featured photo - auto rotates */}
-      <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-white shadow-md border border-rose-100/50">
+      <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] max-w-xl mx-auto rounded-2xl overflow-hidden bg-white shadow-md border border-rose-100/50">
         <AnimatePresence custom={direction} mode="popLayout">
           <motion.div
             key={featured}
@@ -150,11 +150,10 @@ export function PhotoGallery() {
           <motion.button
             key={i}
             onClick={() => setLightbox(i)}
-            className={`group relative aspect-square overflow-hidden rounded-xl bg-white border shadow-sm transition-all duration-300 ${
-              i === featured
+            className={`group relative aspect-square overflow-hidden rounded-xl bg-white border shadow-sm transition-all duration-300 ${i === featured
                 ? "border-rose-300 ring-2 ring-rose-200/50"
                 : "border-rose-100/40 hover:border-rose-200"
-            }`}
+              }`}
             whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.97 }}
             aria-label={CAPTIONS[i]}
@@ -214,7 +213,7 @@ export function PhotoGallery() {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               transition={{ duration: 0.25 }}
-              className="relative w-full max-w-2xl aspect-[3/4] sm:aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl"
+              className="relative w-full max-w-md aspect-[3/4] sm:aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             >
               <Image
