@@ -17,14 +17,20 @@ export function FloatingHearts() {
 
   useEffect(() => {
     setHearts(
-      Array.from({ length: 7 }, (_, i) => ({
-        id: i,
-        left: Math.random() * 100,
-        size: Math.random() * 10 + 6,
-        delay: Math.random() * 16,
-        duration: Math.random() * 10 + 16,
-        opacity: Math.random() * 0.08 + 0.03,
-      }))
+      Array.from({ length: 6 }, (_, i) => {
+        // Evaluate into 6 columns (0 to 5) to guarantee an even spread across the screen
+        const columnWidth = 100 / 6
+        const left = i * columnWidth + Math.random() * (columnWidth * 0.8)
+
+        return {
+          id: i,
+          left: left,
+          size: Math.random() * 8 + 12, // Size between 12px and 20px (about 1.5x+)
+          delay: Math.random() * 15, // Stagger animations widely so they don't rise as a wall
+          duration: Math.random() * 8 + 12,
+          opacity: Math.random() * 0.12 + 0.04,
+        }
+      })
     )
   }, [])
 

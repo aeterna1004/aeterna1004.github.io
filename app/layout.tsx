@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   title: 'Nhật Trường & Cẩm Thuý - Our Love Story',
   description: 'Mỗi giây phút bên nhau đều là kỉ niệm đáng trân trọng',
   icons: {
-    icon: '/icon_fixed.png?v=1',
-    apple: '/apple-icon.png?v=1',
+    icon: '/heart-icon.svg',
+    apple: '/heart-icon.svg',
   },
 }
 
@@ -36,7 +36,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className={`${dmSans.variable} ${dmSerif.variable} font-sans antialiased`}>
+      <body
+        className={`${dmSans.variable} ${dmSerif.variable} font-sans antialiased`}
+        suppressHydrationWarning
+      >
         {children}
         <Analytics />
       </body>

@@ -40,19 +40,6 @@ export function LoveQuote() {
           </motion.p>
         </AnimatePresence>
       </div>
-
-      <div className="flex items-center gap-1">
-        {QUOTES.map((_, i) => (
-          <div
-            key={i}
-            className="w-1 h-1 rounded-full transition-all duration-400"
-            style={{
-              backgroundColor: i === idx ? "oklch(0.65 0.18 10)" : "oklch(0.65 0.18 10 / 0.15)",
-              transform: i === idx ? "scale(1.8)" : "scale(1)",
-            }}
-          />
-        ))}
-      </div>
     </section>
   )
 }

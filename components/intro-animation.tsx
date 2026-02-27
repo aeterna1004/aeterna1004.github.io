@@ -26,7 +26,7 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
       {phase < 5 && (
         <motion.div
           className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
-          style={{ background: "#fefcfb" }}
+          style={{ background: "transparent" }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.7, ease: "easeInOut" }}
         >

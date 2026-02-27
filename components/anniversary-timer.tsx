@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Heart } from "lucide-react"
 
-const ANNIVERSARY_DATE = new Date("2020-04-10T16:50:00")
+const ANNIVERSARY_DATE = new Date("2020-04-10T16:50:00+07:00")
 
 interface TimeUnit {
   value: number
@@ -13,24 +13,35 @@ interface TimeUnit {
 
 function calculateTimeDiff(startDate: Date): TimeUnit[] {
   const now = new Date()
-  let diff = now.getTime() - startDate.getTime()
 
-  const years = Math.floor(diff / (1000 * 60 * 60 * 24 * 365.25))
-  diff -= years * 1000 * 60 * 60 * 24 * 365.25
+  let years = now.getFullYear() - startDate.getFullYear()
+  let months = now.getMonth() - startDate.getMonth()
+  let days = now.getDate() - startDate.getDate()
+  let hours = now.getHours() - startDate.getHours()
+  let minutes = now.getMinutes() - startDate.getMinutes()
+  let seconds = now.getSeconds() - startDate.getSeconds()
 
-  const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30.44))
-  diff -= months * 1000 * 60 * 60 * 24 * 30.44
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  diff -= days * 1000 * 60 * 60 * 24
-
-  const hours = Math.floor(diff / (1000 * 60 * 60))
-  diff -= hours * 1000 * 60 * 60
-
-  const minutes = Math.floor(diff / (1000 * 60))
-  diff -= minutes * 1000 * 60
-
-  const seconds = Math.floor(diff / 1000)
+  if (seconds < 0) {
+    seconds += 60
+    minutes--
+  }
+  if (minutes < 0) {
+    minutes += 60
+    hours--
+  }
+  if (hours < 0) {
+    hours += 24
+    days--
+  }
+  if (days < 0) {
+    const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0)
+    days += prevMonth.getDate()
+    months--
+  }
+  if (months < 0) {
+    months += 12
+    years--
+  }
 
   return [
     { value: years, label: "N\u0103m" },
@@ -72,7 +83,7 @@ export function AnniversaryTimer() {
         <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl text-rose-700 text-center text-balance">
           {"Nh\u1EADt Tr\u01B0\u1EDDng & C\u1EA9m Thu\u00FD"}
         </h1>
-        <p className="text-sm sm:text-base text-rose-400 font-sans">
+        <p className="text-sm sm:text-base text-rose-400 font-sans opacity-90">
           {"B\u00EAn nhau \u0111\u01B0\u1EE3c"}
         </p>
       </motion.div>
@@ -87,12 +98,12 @@ export function AnniversaryTimer() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: i * 0.06 }}
           >
-            <div className="w-full aspect-square flex items-center justify-center rounded-2xl bg-white/80 border border-rose-100/60 shadow-sm">
-              <span className="font-sans text-2xl sm:text-3xl md:text-4xl font-bold text-rose-600 tabular-nums">
+            <div className="w-full aspect-square flex items-center justify-center rounded-2xl bg-white/60 backdrop-blur-sm border shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] border-rose-100/60">
+              <span className="font-sans text-2xl sm:text-3xl md:text-4xl font-bold tabular-nums text-rose-600">
                 {String(unit.value).padStart(2, "0")}
               </span>
             </div>
-            <span className="text-[10px] sm:text-xs uppercase tracking-widest text-rose-400/70 font-sans font-medium">
+            <span className="text-[10px] sm:text-xs uppercase tracking-widest font-sans font-medium opacity-80 text-rose-400">
               {unit.label}
             </span>
           </motion.div>
@@ -101,13 +112,13 @@ export function AnniversaryTimer() {
 
       {/* Date info */}
       <motion.div
-        className="flex items-center gap-2 text-xs sm:text-sm text-rose-400/60 font-sans"
+        className="flex items-center gap-2 text-xs sm:text-sm font-sans opacity-80 text-rose-400"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.4, delay: 0.5 }}
       >
         <Heart className="w-3 h-3 fill-rose-300 text-rose-300" />
-        <span>{"T\u1EEB ng\u00E0y 10/04/2020"}</span>
+        <span>{"T\u1EEB 16:50 ng\u00E0y 10/04/2020"}</span>
       </motion.div>
     </section>
   )
