@@ -75,7 +75,7 @@ export default function HomePage() {
           transition={{ duration: 0.6 }}
         >
           {/* Top bar with tab navigation */}
-          <nav className="sticky top-0 z-40 w-full backdrop-blur-lg bg-white/60 border-b border-rose-100/50">
+          <nav className="sticky top-0 z-40 w-full">
             <div className="flex items-center justify-center gap-1 px-4 py-3 max-w-lg mx-auto">
               {TABS.map((tab) => {
                 const Icon = tab.icon
