@@ -18,8 +18,8 @@ export const metadata: Metadata = {
   title: 'Nhật Trường & Cẩm Thuý - Our Love Story',
   description: 'Mỗi giây phút bên nhau đều là kỉ niệm đáng trân trọng',
   icons: {
-    icon: '/icon.png',
-    apple: '/apple-icon.png',
+    icon: '/icon_fixed.png?v=1',
+    apple: '/apple-icon.png?v=1',
   },
 }
 
