@@ -135,16 +135,18 @@ export default function HomePage() {
           </div>
 
           {/* Footer */}
-          <footer className="flex flex-col items-center gap-3 pb-8 sm:pb-10">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-px bg-rose-200/40" />
-              <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400 opacity-80" />
-              <div className="w-8 h-px bg-rose-200/40" />
-            </div>
-            <p className="text-xs text-rose-400/50 font-sans tracking-wide">
-              {"Nh\u1EADt Tr\u01B0\u1EDDng & C\u1EA9m Thu\u00FD"}
-            </p>
-          </footer>
+          {activeTab === "timer" && (
+            <footer className="flex flex-col items-center gap-3 pb-8 sm:pb-10">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-px bg-rose-200/40" />
+                <Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400 opacity-80" />
+                <div className="w-8 h-px bg-rose-200/40" />
+              </div>
+              <p className="text-xs text-rose-400/50 font-sans tracking-wide">
+                {"Nh\u1EADt Tr\u01B0\u1EDDng & C\u1EA9m Thu\u00FD"}
+              </p>
+            </footer>
+          )}
         </motion.div>
       )}
     </main>
