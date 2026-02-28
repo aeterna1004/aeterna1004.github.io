@@ -1,6 +1,7 @@
 export const MUSIC_TRACKS = [
     "/musics/bg-music-1.mp3",
     "/musics/bg-music-2.mp3",
+    "/musics/bg-music-3.mp3",
 ]
 
 export const MUSIC_VOLUME = 0.15
