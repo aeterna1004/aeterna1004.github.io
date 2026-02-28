@@ -10,6 +10,7 @@ import { LoveQuote } from "@/components/love-quote"
 import { PhotoGallery } from "@/components/photo-gallery"
 import { SparkleParticles } from "@/components/sparkle-particles"
 import { BackgroundMusic, BackgroundMusicRef } from "@/components/background-music"
+import { PARTNER_1_NAME, PARTNER_2_NAME } from "@/lib/constants"
 
 type Tab = "timer" | "photos"
 
@@ -173,7 +174,7 @@ export default function HomePage() {
                 <div className="w-8 h-px bg-rose-200/40" />
               </div>
               <p className="text-xs text-rose-400/50 font-sans tracking-wide">
-                {"Nh\u1EADt Tr\u01B0\u1EDDng & C\u1EA9m Thu\u00FD"}
+                {`${PARTNER_1_NAME} & ${PARTNER_2_NAME}`}
               </p>
             </footer>
           )}

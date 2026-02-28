@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Heart } from "lucide-react"
 
-import { ANNIVERSARY_DATE, ANNIVERSARY_DISPLAY_TEXT } from "@/lib/constants"
+import { ANNIVERSARY_DATE, ANNIVERSARY_DISPLAY_TEXT, PARTNER_1_NAME, PARTNER_2_NAME } from "@/lib/constants"
 
 const START_DATE = new Date(ANNIVERSARY_DATE)
 interface TimeUnit {
@@ -82,7 +82,7 @@ export function AnniversaryTimer() {
         transition={{ duration: 0.5 }}
       >
         <h1 className="font-serif text-2xl sm:text-3xl md:text-4xl text-rose-700 text-center text-balance">
-          {"Nh\u1EADt Tr\u01B0\u1EDDng & C\u1EA9m Thu\u00FD"}
+          {`${PARTNER_1_NAME} & ${PARTNER_2_NAME}`}
         </h1>
         <p className="text-sm sm:text-base text-rose-400 font-sans opacity-90">
           {"B\u00EAn nhau \u0111\u01B0\u1EE3c"}

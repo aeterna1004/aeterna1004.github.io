@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { DM_Sans, DM_Serif_Display } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { PARTNER_1_NAME, PARTNER_2_NAME } from '@/lib/constants'
 import './globals.css'
 
 const dmSans = DM_Sans({
@@ -15,7 +16,7 @@ const dmSerif = DM_Serif_Display({
 })
 
 export const metadata: Metadata = {
-  title: 'Nhật Trường & Cẩm Thuý - Our Love Story',
+  title: `${PARTNER_1_NAME} & ${PARTNER_2_NAME} - Our Love Story`,
   description: 'Mỗi giây phút bên nhau đều là kỉ niệm đáng trân trọng',
   icons: {
     icon: '/heart-icon.svg',
