@@ -37,3 +37,6 @@ export const GALLERY_BOTTOM_QUOTE = "Bởi vì điều tuyệt vời nhất khô
 
 export const ANNIVERSARY_DATE = "2020-04-10T16:50:00+07:00"
 export const ANNIVERSARY_DISPLAY_TEXT = "Từ 16:50 ngày 10/04/2020"
+
+export const PARTNER_1_NAME = "Nhật Trường"
+export const PARTNER_2_NAME = "Cẩm Thúy"

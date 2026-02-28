@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
+import { PARTNER_1_NAME, PARTNER_2_NAME } from "@/lib/constants"
 
 interface IntroAnimationProps {
   onComplete: () => void
@@ -95,7 +96,7 @@ export function IntroAnimation({ onComplete, onPlayAudio }: IntroAnimationProps)
               animate={phase >= 2 ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
-              {"Nh\u1EADt Tr\u01B0\u1EDDng"}
+              {PARTNER_1_NAME}
             </motion.h1>
 
             {/* Ampersand */}
@@ -117,7 +118,7 @@ export function IntroAnimation({ onComplete, onPlayAudio }: IntroAnimationProps)
               animate={phase >= 2 ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.5, ease: "easeOut" }}
             >
-              {"C\u1EA9m Thu\u00FD"}
+              {PARTNER_2_NAME}
             </motion.h1>
 
             {/* Subtitle */}
