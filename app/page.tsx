@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useCallback, useEffect } from "react"
+import { useState, useCallback, useEffect, useRef } from "react"
 import { motion } from "framer-motion"
 import { Heart, Clock, Camera } from "lucide-react"
 import { IntroAnimation } from "@/components/intro-animation"
@@ -9,6 +9,7 @@ import { FloatingHearts } from "@/components/floating-hearts"
 import { LoveQuote } from "@/components/love-quote"
 import { PhotoGallery } from "@/components/photo-gallery"
 import { SparkleParticles } from "@/components/sparkle-particles"
+import { BackgroundMusic, BackgroundMusicRef } from "@/components/background-music"
 
 type Tab = "timer" | "photos"
 
@@ -21,6 +22,7 @@ export default function HomePage() {
   const [introComplete, setIntroComplete] = useState(false)
   const [activeTab, setActiveTab] = useState<Tab>("timer")
   const [bgVariation, setBgVariation] = useState(0)
+  const bgMusicRef = useRef<BackgroundMusicRef>(null)
 
   useEffect(() => {
     // Pick a random variation between 0 and 4 on mount
@@ -29,6 +31,12 @@ export default function HomePage() {
 
   const handleIntroComplete = useCallback(() => {
     setIntroComplete(true)
+  }, [])
+
+  const handlePlayAudio = useCallback(() => {
+    if (bgMusicRef.current) {
+      bgMusicRef.current.playAudio()
+    }
   }, [])
 
   // Curated elegant, modern background gradients - Very light, soft pastel romantic themes
@@ -56,7 +64,7 @@ export default function HomePage() {
       className="relative min-h-screen overflow-hidden transition-colors duration-1000 ease-in-out"
       style={{ background: bgGradients[bgVariation] }}
     >
-      {!introComplete && <IntroAnimation onComplete={handleIntroComplete} />}
+      {!introComplete && <IntroAnimation onComplete={handleIntroComplete} onPlayAudio={handlePlayAudio} />}
 
       {/* Ambient glow */}
       <div className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000" aria-hidden="true">
@@ -66,6 +74,7 @@ export default function HomePage() {
 
       <FloatingHearts />
       <SparkleParticles />
+      <BackgroundMusic ref={bgMusicRef} />
 
       {introComplete && (
         <motion.div

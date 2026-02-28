@@ -5,21 +5,7 @@ import Image from "next/image"
 import { motion, AnimatePresence } from "framer-motion"
 import { ChevronLeft, ChevronRight, X, Heart } from "lucide-react"
 
-// Combine maps so title is permanently associated with the specific photo
-const PHOTO_DATA = [
-  { src: "/photos/photo-1.jpg" }, // index 0: Always fixed
-  { src: "/photos/photo-2.jpg" },
-  { src: "/photos/photo-3.jpg" },
-  { src: "/photos/photo-4.jpg" },
-  { src: "/photos/photo-5.jpg" },
-  { src: "/photos/photo-6.jpg" },
-  { src: "/photos/photo-7.jpg" },
-  { src: "/photos/photo-8.jpg" },
-  { src: "/photos/photo-9.jpg" },
-  { src: "/photos/photo-10.jpg" },
-  { src: "/photos/photo-11.jpg" },
-  { src: "/photos/photo-12.jpg" },
-]
+import { PHOTO_DATA, GALLERY_TITLE, GALLERY_SUBTITLE, GALLERY_BOTTOM_QUOTE } from "@/lib/constants"
 
 // The slot in the bento grid that holds the featured image
 const FEATURED_SLOT_IDX = 0;
@@ -41,63 +27,161 @@ export function PhotoGallery() {
   const [displayIndices, setDisplayIndices] = useState<number[]>([])
 
   useEffect(() => {
-    // 1. Pick 1 random unique one for the spotlight
-    const randomFeaturedIdx = Math.floor(Math.random() * PHOTO_DATA.length)
-    const initialIndices: number[] = [randomFeaturedIdx]
+    // Helper function to pick 5 random unique indices
+    const pickFiveRandomPhotos = () => {
+      const selectedIndices: number[] = []
+      const availableIndices = Array.from({ length: PHOTO_DATA.length }, (_, i) => i)
 
-    // 2. Pick 4 sequential available ones to fill the rest of the layout initially
-    for (let i = 0; i < PHOTO_DATA.length; i++) {
-      // Skip the one we already chose for spotlight
-      if (i !== randomFeaturedIdx) {
-        initialIndices.push(i)
+      while (selectedIndices.length < 5 && availableIndices.length > 0) {
+        const randIndex = Math.floor(Math.random() * availableIndices.length)
+        const chosenPhotoIdx = availableIndices[randIndex]
+
+        selectedIndices.push(chosenPhotoIdx)
+        availableIndices.splice(randIndex, 1) // Remove so we don't pick it again
       }
-      // Stop when we have 5 items total (1 spotlight + 4 regular)
-      if (initialIndices.length === 5) break;
+
+      return selectedIndices
     }
 
-    setDisplayIndices(initialIndices)
+    // Initial load
+    setDisplayIndices(pickFiveRandomPhotos())
     setMounted(true)
   }, [])
 
-  // Random swap logic if there are more than 5 unique photos
+  // =========================================================================
+  // ANIMATION TIMERS:
+  // 1. Random 1 small photo: every 5s ± 1.5s
+  // 2. Random all 4 small photos: every 20s + 0-4s
+  // 3. Random large photo: every 50s
+  // 4. Random all 5 photos: every 90s (1p30s)
+  // =========================================================================
   useEffect(() => {
     if (!mounted || displayIndices.length === 0) return;
-
-    // Check if we have more *unique* photos than slots
     const uniqueSrcs = new Set(PHOTO_DATA.map(p => p.src)).size;
-    if (uniqueSrcs <= 5) return
+    if (uniqueSrcs <= 5) return;
 
-    const interval = setInterval(() => {
-      setDisplayIndices(prev => {
-        const next = [...prev]
+    let timeout1: NodeJS.Timeout;
+    let timeout2: NodeJS.Timeout;
+    let timeout3: NodeJS.Timeout;
+    let timeout4: NodeJS.Timeout;
 
-        // Randomly choose one of the non-featured slots to swap (slots 1, 2, 3, or 4)
-        // Math.floor(Math.random() * 4) + 1 generates exactly 1, 2, 3, or 4 uniformly
-        const slotToReplace = Math.floor(Math.random() * 4) + 1
+    // Helper to get available photos not currently shown
+    const getAvailableIndices = (currentIndices: number[], excludeIdxs: number[] = []) => {
+      const currentlyDisplayedSrcs = currentIndices.map(idx => PHOTO_DATA[idx]?.src)
+      let available = PHOTO_DATA
+        .map((_, i) => i)
+        .filter(i => !excludeIdxs.includes(i) && !currentlyDisplayedSrcs.includes(PHOTO_DATA[i]?.src))
 
-        // Get currently displayed image sources
-        const currentlyDisplayedSrcs = prev.map(idx => PHOTO_DATA[idx]?.src)
+      // Fallback if we run out of unique photos
+      if (available.length === 0) {
+        available = Array.from({ length: PHOTO_DATA.length }, (_, i) => i).filter(i => !excludeIdxs.includes(i))
+      }
+      return available;
+    }
 
-        // Find photos that are NOT currently displayed and NOT the featured photo
-        const currentFeaturedId = prev[FEATURED_SLOT_IDX]
+    // 1. Đổi 1 ảnh nhỏ tuần tự (khoảng 3.5s đến 6.5s)
+    // Dùng 1 bộ đếm duy nhất nhưng lần lượt xoay vòng qua 4 ô để đảm bảo chúng không bao giờ lật cùng một lúc
+    let currentSlotToSwap = 1;
+    const scheduleSingleSmallSwap = () => {
+      const delay = 5000 + (Math.random() * 3000 - 1500) // 5s ± 1.5s
+      timeout1 = setTimeout(() => {
+        setDisplayIndices(prev => {
+          const next = [...prev]
+          const slotToReplace = currentSlotToSwap;
 
-        const availableIdxs = PHOTO_DATA
-          .map((_, i) => i)
-          .filter(i =>
-            i !== currentFeaturedId &&
-            !currentlyDisplayedSrcs.includes(PHOTO_DATA[i].src)
-          )
+          // Chuyển sang ô tiếp theo cho lần lật sau (1 -> 2 -> 3 -> 4 -> vòng lại 1)
+          currentSlotToSwap = currentSlotToSwap >= 4 ? 1 : currentSlotToSwap + 1;
 
-        if (availableIdxs.length > 0) {
-          // Pick a random available photo that guarantees visual uniqueness
-          const newPhotoIdx = availableIdxs[Math.floor(Math.random() * availableIdxs.length)]
-          next[slotToReplace] = newPhotoIdx
-        }
-        return next
-      })
-    }, 5500) // Slower swap: every 5.5 seconds
+          const availableIdxs = getAvailableIndices(prev, [prev[FEATURED_SLOT_IDX]])
 
-    return () => clearInterval(interval)
+          if (availableIdxs.length > 0) {
+            next[slotToReplace] = availableIdxs[Math.floor(Math.random() * availableIdxs.length)]
+          }
+          return next
+        })
+        scheduleSingleSmallSwap()
+      }, delay)
+    }
+
+    // 2. Đổi cả 4 ảnh nhỏ (20s + ngẫu nhiên 0-4s)
+    const scheduleFourSmallSwap = () => {
+      const delay = 20000 + Math.random() * 4000 // 20s + 0-4s
+      timeout2 = setTimeout(() => {
+        setDisplayIndices(prev => {
+          const next = [...prev]
+          const availableIdxs = getAvailableIndices(prev, [prev[FEATURED_SLOT_IDX]])
+
+          // Trộn mảng available
+          for (let i = availableIdxs.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [availableIdxs[i], availableIdxs[j]] = [availableIdxs[j], availableIdxs[i]]
+          }
+
+          let availCount = 0;
+          for (let slot = 1; slot <= 4; slot++) {
+            if (availCount < availableIdxs.length) {
+              next[slot] = availableIdxs[availCount]
+              availCount++
+            }
+          }
+          return next
+        })
+        scheduleFourSmallSwap()
+      }, delay)
+    }
+
+    // 3. Đổi ảnh lớn (cố định 50s)
+    const scheduleLargeSwap = () => {
+      timeout3 = setTimeout(() => {
+        setDisplayIndices(prev => {
+          const next = [...prev]
+          const availableIdxs = getAvailableIndices(prev)
+
+          if (availableIdxs.length > 0) {
+            next[FEATURED_SLOT_IDX] = availableIdxs[Math.floor(Math.random() * availableIdxs.length)]
+          }
+          return next
+        })
+        scheduleLargeSwap()
+      }, 50000)
+    }
+
+    // 4. Đổi toàn bộ 5 ảnh (cố định 90s - 1 phút 30 giây)
+    const scheduleRefreshAll = () => {
+      timeout4 = setTimeout(() => {
+        setDisplayIndices(prev => {
+          const newIndices: number[] = []
+          let candidates = getAvailableIndices(prev)
+
+          if (candidates.length < 5) {
+            candidates = Array.from({ length: PHOTO_DATA.length }, (_, i) => i)
+          }
+
+          while (newIndices.length < 5 && candidates.length > 0) {
+            const randIndex = Math.floor(Math.random() * candidates.length)
+            newIndices.push(candidates[randIndex])
+            candidates.splice(randIndex, 1)
+          }
+
+          if (newIndices.length < 5) return prev;
+          return newIndices
+        })
+        scheduleRefreshAll()
+      }, 90000)
+    }
+
+    // Khởi động cascader
+    scheduleSingleSmallSwap() // Chỉ gọi 1 luồng duy nhất
+    scheduleFourSmallSwap()
+    scheduleLargeSwap()
+    scheduleRefreshAll()
+
+    return () => {
+      clearTimeout(timeout1)
+      clearTimeout(timeout2)
+      clearTimeout(timeout3)
+      clearTimeout(timeout4)
+    }
   }, [mounted, displayIndices.length])
 
   const goPrev = useCallback(() => {
@@ -139,8 +223,8 @@ export function PhotoGallery() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center"
       >
-        <h2 className="font-serif text-2xl text-rose-700">Góc Kỷ Niệm</h2>
-        <p className="text-sm font-sans text-rose-400 mt-1">Những khoảnh khắc yêu thương</p>
+        <h2 className="font-serif text-2xl text-rose-700">{GALLERY_TITLE}</h2>
+        <p className="text-sm font-sans text-rose-400 mt-1">{GALLERY_SUBTITLE}</p>
       </motion.div>
 
       {/* Dynamic Bento Box Gallery - Grid optimized for 5 items */}
@@ -189,7 +273,7 @@ export function PhotoGallery() {
         className="mt-6 p-6 md:p-8 rounded-2xl bg-white/40 border border-rose-100/60 backdrop-blur-sm w-full max-w-2xl text-center"
       >
         <p className="text-base sm:text-lg font-serif text-rose-800 italic leading-relaxed">
-          {'"'}Bởi vì điều tuyệt vời nhất không nằm ở nơi ta đến, mà là người đồng hành cùng ta trên ngần ấy chặng đường.{'"'}
+          {'"'}{GALLERY_BOTTOM_QUOTE}{'"'}
         </p>
       </motion.div>
 

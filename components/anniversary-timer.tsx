@@ -4,8 +4,9 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Heart } from "lucide-react"
 
-const ANNIVERSARY_DATE = new Date("2020-04-10T16:50:00+07:00")
+import { ANNIVERSARY_DATE, ANNIVERSARY_DISPLAY_TEXT } from "@/lib/constants"
 
+const START_DATE = new Date(ANNIVERSARY_DATE)
 interface TimeUnit {
   value: number
   label: string
@@ -55,14 +56,14 @@ function calculateTimeDiff(startDate: Date): TimeUnit[] {
 
 export function AnniversaryTimer() {
   const [timeUnits, setTimeUnits] = useState<TimeUnit[]>(() =>
-    calculateTimeDiff(ANNIVERSARY_DATE)
+    calculateTimeDiff(START_DATE)
   )
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
     const interval = setInterval(() => {
-      setTimeUnits(calculateTimeDiff(ANNIVERSARY_DATE))
+      setTimeUnits(calculateTimeDiff(START_DATE))
     }, 1000)
     return () => clearInterval(interval)
   }, [])
@@ -118,7 +119,7 @@ export function AnniversaryTimer() {
         transition={{ duration: 0.4, delay: 0.5 }}
       >
         <Heart className="w-3 h-3 fill-rose-300 text-rose-300" />
-        <span>{"T\u1EEB 16:50 ng\u00E0y 10/04/2020"}</span>
+        <span>{ANNIVERSARY_DISPLAY_TEXT}</span>
       </motion.div>
     </section>
   )

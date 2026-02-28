@@ -5,30 +5,32 @@ import { motion, AnimatePresence } from "framer-motion"
 
 interface IntroAnimationProps {
   onComplete: () => void
+  onPlayAudio: () => void
 }
 
-export function IntroAnimation({ onComplete }: IntroAnimationProps) {
+export function IntroAnimation({ onComplete, onPlayAudio }: IntroAnimationProps) {
   const [phase, setPhase] = useState(0)
+  const [hasClicked, setHasClicked] = useState(false)
 
   useEffect(() => {
     const timers = [
       setTimeout(() => setPhase(1), 300),
       setTimeout(() => setPhase(2), 1100),
       setTimeout(() => setPhase(3), 1900),
-      setTimeout(() => setPhase(4), 3200),
-      setTimeout(() => onComplete(), 3900),
+      setTimeout(() => setPhase(4), 2800), // Show the button earlier
+      // Removed the auto-complete timeout so it waits for user interaction
     ]
     return () => timers.forEach(clearTimeout)
-  }, [onComplete])
+  }, [])
 
   return (
     <AnimatePresence>
-      {phase < 5 && (
+      {!hasClicked && (
         <motion.div
           className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden"
           style={{ background: "transparent" }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
+          exit={{ opacity: 0, scale: 1.1 }}
+          transition={{ duration: 0.8, ease: "anticipate" }}
         >
           {/* Soft radial glow */}
           <div
@@ -139,6 +141,21 @@ export function IntroAnimation({ onComplete }: IntroAnimationProps) {
                 {"Chuy\u1EC7n t\u00ECnh y\u00EAu c\u1EE7a ch\u00FAng m\u00ECnh"}
               </p>
             </motion.div>
+
+            {/* Interactive Enter Button */}
+            <motion.button
+              initial={{ opacity: 0, y: 20 }}
+              animate={phase >= 4 ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              onClick={() => {
+                setHasClicked(true)
+                onPlayAudio() // Explicit binding to trigger playback on ONLY this button
+                setTimeout(onComplete, 800) // Delay to let exit animation finish
+              }}
+              className="mt-8 px-8 py-3 rounded-full bg-white/60 hover:bg-white/80 backdrop-blur-md border border-rose-200/50 text-rose-600 font-sans font-medium tracking-wide shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300"
+            >
+              Bắt đầu trải nghiệm
+            </motion.button>
           </div>
         </motion.div>
       )}
