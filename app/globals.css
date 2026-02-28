@@ -88,6 +88,7 @@
   body {
     @apply bg-background text-foreground;
     overflow-x: hidden;
+    background-color: #fdf2f4; /* Matches the lightest theme color */
   }
 }
 

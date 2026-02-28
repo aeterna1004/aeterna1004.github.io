@@ -61,15 +61,15 @@ export default function HomePage() {
 
   return (
     <main
-      className="relative min-h-screen overflow-hidden transition-colors duration-1000 ease-in-out"
+      className="relative min-h-[100dvh] overflow-x-hidden transition-colors duration-1000 ease-in-out"
       style={{ background: bgGradients[bgVariation] }}
     >
       {!introComplete && <IntroAnimation onComplete={handleIntroComplete} onPlayAudio={handlePlayAudio} />}
 
       {/* Ambient glow */}
       <div className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000" aria-hidden="true">
-        <div className={`absolute top-[5%] right-[10%] w-48 h-48 sm:w-72 sm:h-72 rounded-full ${ambientGlows[bgVariation].top} blur-[80px]`} />
-        <div className={`absolute bottom-[10%] left-[5%] w-40 h-40 sm:w-64 sm:h-64 rounded-full ${ambientGlows[bgVariation].bottom} blur-[70px]`} />
+        <div className={`absolute top-[-10%] right-[-5%] w-[70vw] h-[70vw] max-w-[600px] max-h-[600px] rounded-full ${ambientGlows[bgVariation].top} blur-[100px] sm:blur-[120px]`} />
+        <div className={`absolute bottom-[-10%] left-[-5%] w-[60vw] h-[60vw] max-w-[500px] max-h-[500px] rounded-full ${ambientGlows[bgVariation].bottom} blur-[90px] sm:blur-[110px]`} />
       </div>
 
       <FloatingHearts />
