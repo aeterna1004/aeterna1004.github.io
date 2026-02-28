@@ -48,13 +48,28 @@ export default function HomePage() {
     "linear-gradient(170deg, #FFFCF7 0%, #FFF7E8 40%, #FFE9BA 100%)", // 4: Vanilla Cream
   ]
 
-  // Corresponding elegant ambient glows based on the background
+  // Corresponding elegant ambient glows based on the background - Using radial gradients for better mobile stability
   const ambientGlows = [
-    { top: "bg-rose-200/40", bottom: "bg-orange-100/40" },  // Soft Peach
-    { top: "bg-green-200/30", bottom: "bg-emerald-100/30" }, // Matcha Mint
-    { top: "bg-purple-200/40", bottom: "bg-fuchsia-100/30" }, // Lavender Mist
-    { top: "bg-cyan-200/30", bottom: "bg-blue-100/30" },    // Morning Sky
-    { top: "bg-yellow-200/40", bottom: "bg-amber-100/30" },   // Vanilla Cream
+    {
+      top: "radial-gradient(circle at center, rgba(254, 205, 211, 0.45) 0%, rgba(254, 205, 211, 0) 70%)",
+      bottom: "radial-gradient(circle at center, rgba(255, 237, 213, 0.45) 0%, rgba(255, 237, 213, 0) 70%)"
+    }, // Soft Peach
+    {
+      top: "radial-gradient(circle at center, rgba(187, 247, 208, 0.35) 0%, rgba(187, 247, 208, 0) 70%)",
+      bottom: "radial-gradient(circle at center, rgba(209, 250, 229, 0.35) 0%, rgba(209, 250, 229, 0) 70%)"
+    }, // Matcha Mint
+    {
+      top: "radial-gradient(circle at center, rgba(233, 213, 255, 0.45) 0%, rgba(233, 213, 255, 0) 70%)",
+      bottom: "radial-gradient(circle at center, rgba(250, 232, 255, 0.35) 0%, rgba(250, 232, 255, 0) 70%)"
+    }, // Lavender Mist
+    {
+      top: "radial-gradient(circle at center, rgba(165, 243, 252, 0.35) 0%, rgba(165, 243, 252, 0) 70%)",
+      bottom: "radial-gradient(circle at center, rgba(219, 234, 254, 0.35) 0%, rgba(219, 234, 254, 0) 70%)"
+    }, // Morning Sky
+    {
+      top: "radial-gradient(circle at center, rgba(254, 240, 138, 0.45) 0%, rgba(254, 240, 138, 0) 70%)",
+      bottom: "radial-gradient(circle at center, rgba(254, 243, 199, 0.35) 0%, rgba(254, 243, 199, 0) 70%)"
+    }, // Vanilla Cream
   ]
 
 
@@ -68,8 +83,14 @@ export default function HomePage() {
 
       {/* Ambient glow */}
       <div className="fixed inset-0 pointer-events-none z-0 transition-opacity duration-1000" aria-hidden="true">
-        <div className={`absolute top-[-10%] right-[-5%] w-[70vw] h-[70vw] max-w-[600px] max-h-[600px] rounded-full ${ambientGlows[bgVariation].top} blur-[100px] sm:blur-[120px]`} />
-        <div className={`absolute bottom-[-10%] left-[-5%] w-[60vw] h-[60vw] max-w-[500px] max-h-[500px] rounded-full ${ambientGlows[bgVariation].bottom} blur-[90px] sm:blur-[110px]`} />
+        <div
+          className="absolute top-[-20%] right-[-10%] w-[100vw] h-[100vw] max-w-[800px] max-h-[800px] rounded-full"
+          style={{ background: ambientGlows[bgVariation].top }}
+        />
+        <div
+          className="absolute bottom-[-15%] left-[-10%] w-[90vw] h-[90vw] max-w-[700px] max-h-[700px] rounded-full"
+          style={{ background: ambientGlows[bgVariation].bottom }}
+        />
       </div>
 
       <FloatingHearts />
