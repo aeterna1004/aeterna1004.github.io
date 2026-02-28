@@ -152,9 +152,24 @@ export function IntroAnimation({ onComplete, onPlayAudio }: IntroAnimationProps)
                 onPlayAudio() // Explicit binding to trigger playback on ONLY this button
                 setTimeout(onComplete, 800) // Delay to let exit animation finish
               }}
-              className="mt-8 px-8 py-3 rounded-full bg-white/60 hover:bg-white/80 backdrop-blur-md border border-rose-200/50 text-rose-600 font-sans font-medium tracking-wide shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300"
+              className="mt-8 px-8 py-3 rounded-full bg-white/60 hover:bg-white/80 backdrop-blur-md border border-rose-200/50 text-rose-600 font-sans font-medium tracking-wide shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2 group"
             >
-              Bắt đầu trải nghiệm
+              <span className="relative z-10 text-sm sm:text-base tracking-wider font-light">Đi nào</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                className="w-4 h-4 relative z-10 text-rose-500 group-hover:translate-x-1 transition-transform duration-300"
+              >
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
             </motion.button>
           </div>
         </motion.div>
