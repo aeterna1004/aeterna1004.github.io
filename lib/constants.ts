@@ -38,7 +38,7 @@ export const GALLERY_SUBTITLE = "Những khoảnh khắc yêu thương"
 export const GALLERY_BOTTOM_QUOTE = "Bởi vì điều tuyệt vời nhất không nằm ở nơi ta đến, mà là người đồng hành cùng ta trên ngần ấy chặng đường."
 
 // export const ANNIVERSARY_DATE = "2020-04-10T16:50:00+07:00"
-export const ANNIVERSARY_DATE = "2020-03-07T22:45:00+07:00"
+export const ANNIVERSARY_DATE = "2020-03-07T22:50:00+07:00"
 export const ANNIVERSARY_DISPLAY_TEXT = "Từ 16:50 ngày 10/04/2020"
 
 export const PARTNER_1_NAME = "Nhật Trường"
