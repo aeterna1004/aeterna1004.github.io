@@ -10,6 +10,8 @@ import { LoveQuote } from "@/components/love-quote"
 import { PhotoGallery } from "@/components/photo-gallery"
 import { SparkleParticles } from "@/components/sparkle-particles"
 import { BackgroundMusic, BackgroundMusicRef } from "@/components/background-music"
+import { CelebrationManager } from "@/components/celebration/celebration-manager"
+import { useCelebration } from "@/hooks/useCelebration"
 import { PARTNER_1_NAME, PARTNER_2_NAME } from "@/lib/constants"
 
 type Tab = "timer" | "photos"
@@ -24,6 +26,8 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState<Tab>("timer")
   const [bgVariation, setBgVariation] = useState(0)
   const bgMusicRef = useRef<BackgroundMusicRef>(null)
+  const currentScreen = !introComplete ? "intro" : activeTab
+  const celebration = useCelebration(currentScreen)
 
   useEffect(() => {
     // Pick a random variation between 0 and 4 on mount
@@ -96,6 +100,7 @@ export default function HomePage() {
 
       <FloatingHearts />
       <SparkleParticles />
+      <CelebrationManager activeEffects={celebration.activeEffects} />
       <BackgroundMusic ref={bgMusicRef} />
 
       {introComplete && (
