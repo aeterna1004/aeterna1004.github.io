@@ -138,9 +138,23 @@ interface RomanticFireworksProps {
     slowInterval?: {
         minMs: number;
         maxMs: number;
-        burstCount?: { min: number; max: number };
+        burstCount?: {
+            min: number;
+            max: number;
+            mobileMin?: number;
+            mobileMax?: number;
+            tabletMin?: number;
+            tabletMax?: number;
+        };
     }
-    fastPhase?: { durationMs: number; minMs: number; maxMs: number; maxItems?: number }
+    fastPhase?: {
+        durationMs: number;
+        minMs: number;
+        maxMs: number;
+        maxItems?: number;
+        mobileMaxItems?: number;
+        tabletMaxItems?: number;
+    }
     onComplete?: () => void
 }
 
@@ -252,10 +266,17 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
                 const isOpeningPhase = elapsed < duration
 
                 if (isOpeningPhase) {
+                    const isMobile = window.innerWidth < 768
+                    const isTablet = window.innerWidth < 1024
+
                     if (fastPhase) {
                         const range = fastPhase.maxMs - fastPhase.minMs
                         launchInterval = (fastPhase.minMs + Math.random() * range) / quantityScale
-                        maxRockets = Math.max(1, Math.floor((fastPhase.maxItems || 6) * quantityScale))
+
+                        const baseMax = (isMobile && fastPhase.mobileMaxItems !== undefined) ? fastPhase.mobileMaxItems :
+                            (isTablet && fastPhase.tabletMaxItems !== undefined) ? fastPhase.tabletMaxItems :
+                                (fastPhase.maxItems || 6)
+                        maxRockets = Math.max(1, Math.floor(baseMax * quantityScale))
                     } else {
                         launchInterval = (400 + Math.random() * 600) / quantityScale
                         maxRockets = Math.max(1, Math.floor(6 * quantityScale))
@@ -281,9 +302,17 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
             if (timestamp - lastLaunchRef.current > launchInterval) {
                 if (particlesRef.current.length < 400) {
                     if (intensity === "low" && slowInterval?.burstCount) {
-                        // BẮN THEO ĐỢT (BURST): Bắn một chùm nhiều quả cùng lúc (staggered)
-                        // Đảm bảo không bắn chung một chỗ bằng cách đảo bên (Trái/Phải)
-                        const count = Math.floor(Math.random() * (slowInterval.burstCount.max - slowInterval.burstCount.min + 1)) + slowInterval.burstCount.min
+                        const isMobile = window.innerWidth < 768
+                        const isTablet = window.innerWidth < 1024
+
+                        const min = (isMobile && slowInterval.burstCount.mobileMin !== undefined) ? slowInterval.burstCount.mobileMin :
+                            (isTablet && slowInterval.burstCount.tabletMin !== undefined) ? slowInterval.burstCount.tabletMin :
+                                slowInterval.burstCount.min
+                        const max = (isMobile && slowInterval.burstCount.mobileMax !== undefined) ? slowInterval.burstCount.mobileMax :
+                            (isTablet && slowInterval.burstCount.tabletMax !== undefined) ? slowInterval.burstCount.tabletMax :
+                                slowInterval.burstCount.max
+
+                        const count = Math.floor(Math.random() * (max - min + 1)) + min
                         for (let i = 0; i < count; i++) {
                             setTimeout(() => {
                                 if (rocketsRef.current.length < 10) { // Giới hạn an toàn

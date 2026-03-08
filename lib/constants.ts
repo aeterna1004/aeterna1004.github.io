@@ -46,6 +46,13 @@ export const VN_WOMEN_DAY_QUOTES = [
     "Chẳng cần là hoa hậu của ai, em luôn là người con gái đẹp nhất trong mắt anh."
 ];
 
+export const BIRTHDAY_QUOTES = [
+    "Chúc mừng sinh nhật nhé, niềm hạnh phúc của anh.",
+    "Bên em, tuổi mới nào cũng thật rạng rỡ.",
+    "Cảm ơn ngày này năm ấy, thế giới đã có một thiên thần.",
+    "Hành trình tuổi mới, hãy để anh được đồng hành cùng em.",
+]
+
 export const PHOTO_DATA = [
     { src: "/photos/photo-1.jpg" },
     { src: "/photos/photo-2.jpg" },
@@ -91,9 +98,24 @@ export interface CelebrationRule {
     slowInterval?: {
         minMs: number;
         maxMs: number;
-        burstCount?: { min: number; max: number };
+        burstCount?: {
+            min: number;
+            max: number;
+            mobileMin?: number;
+            mobileMax?: number;
+            tabletMin?: number;
+            tabletMax?: number;
+        };
     } // Mức độ giãn cách tính bằng mili-giây khi sang hiệu ứng chậm
-    fastPhase?: { durationMs: number; minMs: number; maxMs: number; maxItems?: number } // Cấu hình màn "Mở màn" đại tiệc
+    fastPhase?: {
+        durationMs: number;
+        minMs: number;
+        maxMs: number;
+        maxItems?: number;
+        mobileMaxItems?: number;
+        tabletMaxItems?: number;
+    } // Cấu hình màn "Mở màn" đại tiệc
+    birthdayMaster?: { name: string; year: number } // Thông tin để tính số tuổi
 }
 
 export const CELEBRATION_RULES: CelebrationRule[] = [
@@ -108,9 +130,9 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 3 }
+            burstCount: { min: 1, max: 3, mobileMax: 2 }
         },
-        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6 }
+        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
 
     // Valentine → romantic-fireworks
@@ -124,9 +146,9 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 3 }
+            burstCount: { min: 1, max: 3, mobileMax: 2 }
         },
-        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6 }
+        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
 
     // Quốc tế Phụ nữ 8/3 → rose-fireworks
@@ -140,9 +162,9 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 2 }
+            burstCount: { min: 1, max: 3, mobileMax: 2 }
         },
-        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6 }
+        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
 
     // Phụ nữ Việt Nam 20/10 → rose-fireworks
@@ -156,8 +178,40 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 2 }
+            burstCount: { min: 1, max: 3, mobileMax: 2 }
         },
-        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6 }
+        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
+    },
+
+    // Sinh nhật Cẩm Thúy 29/04
+    {
+        trigger: { type: "custom-date", date: "29/04", time: "00:00", durationHours: 24 },
+        effect: "rose-fireworks",
+        birthdayMaster: { name: "Cẩm Thúy", year: 2003 },
+        customQuotes: BIRTHDAY_QUOTES,
+        lowIntensityScreens: ["intro", "timer", "photos"],
+        highIntensityScreens: ["timer"],
+        slowInterval: {
+            minMs: 10000,
+            maxMs: 15000,
+            burstCount: { min: 1, max: 3, mobileMax: 2 }
+        },
+        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
+    },
+
+    // Sinh nhật Nhật Trường 16/06
+    {
+        trigger: { type: "custom-date", date: "16/06", time: "00:00", durationHours: 24 },
+        effect: "rose-fireworks",
+        birthdayMaster: { name: "Nhật Trường", year: 2003 },
+        customQuotes: QUOTES,
+        lowIntensityScreens: ["intro", "timer", "photos"],
+        highIntensityScreens: ["timer"],
+        slowInterval: {
+            minMs: 10000,
+            maxMs: 15000,
+            burstCount: { min: 1, max: 3, mobileMax: 2 }
+        },
+        fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
 ]

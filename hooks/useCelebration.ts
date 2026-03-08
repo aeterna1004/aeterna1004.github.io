@@ -84,7 +84,9 @@ function getMatchedEffects(currentScreen: string): ActiveCelebration[] {
                         intensity: finalIntensity,
                         slowInterval: rule.slowInterval,
                         fastPhase: rule.fastPhase,
-                        customSubtitle: rule.customSubtitle,
+                        customSubtitle: rule.birthdayMaster
+                            ? `Mừng sinh nhật ${rule.birthdayMaster.name} tròn ${now.getFullYear() - rule.birthdayMaster.year} tuổi`
+                            : rule.customSubtitle,
                         customQuotes: rule.customQuotes
                     })
                 }
