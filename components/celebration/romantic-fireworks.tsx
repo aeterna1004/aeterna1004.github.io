@@ -236,8 +236,28 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
             setTimeout(() => launchRocket(), 1000)
             setTimeout(() => launchRocket(), 1500) // The "grand finale" of the opening
         } else {
-            // Optional: Start with just 1 rocket gracefully if it's the ambient phase
-            setTimeout(() => launchRocket(), 500)
+            // Bắn mở màn theo burstCount setting nếu có, không hardcode 1 quả
+            if (slowInterval?.burstCount) {
+                const isMobile = window.innerWidth < 768
+                const isTablet = window.innerWidth < 1024
+
+                const min = (isMobile && slowInterval.burstCount.mobileMin !== undefined) ? slowInterval.burstCount.mobileMin :
+                    (isTablet && slowInterval.burstCount.tabletMin !== undefined) ? slowInterval.burstCount.tabletMin :
+                        slowInterval.burstCount.min
+                const max = (isMobile && slowInterval.burstCount.mobileMax !== undefined) ? slowInterval.burstCount.mobileMax :
+                    (isTablet && slowInterval.burstCount.tabletMax !== undefined) ? slowInterval.burstCount.tabletMax :
+                        slowInterval.burstCount.max
+
+                const count = Math.floor(Math.random() * (max - min + 1)) + min
+                for (let i = 0; i < count; i++) {
+                    setTimeout(() => {
+                        const side = i % 2 === 0 ? "left" : "right"
+                        launchRocket(side)
+                    }, 500 + i * 450 + Math.random() * 200)
+                }
+            } else {
+                setTimeout(() => launchRocket(), 500)
+            }
         }
 
         let lastTime = performance.now()
