@@ -154,7 +154,7 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
     // Quốc tế Phụ nữ 8/3 → rose-fireworks
     {
         trigger: { type: "custom-date", date: "08/03", time: "00:00", durationHours: 24 },
-        effect: "romantic-fireworks",
+        effect: "rose-fireworks",
         customSubtitle: "Chúc mừng ngày Phụ nữ 8/3",
         customQuotes: WOMEN_DAY_QUOTES,
         highIntensityScreens: ["timer", "photos"],
