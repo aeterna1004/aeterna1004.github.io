@@ -130,7 +130,7 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 3, mobileMax: 2 }
+            burstCount: { min: 2, max: 3, mobileMin: 1, mobileMax: 2 }
         },
         fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
@@ -146,7 +146,7 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 3, mobileMax: 2 }
+            burstCount: { min: 2, max: 3, mobileMin: 1, mobileMax: 2 }
         },
         fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
@@ -162,7 +162,7 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 3, mobileMax: 2 }
+            burstCount: { min: 2, max: 3, mobileMin: 1, mobileMax: 2 }
         },
         fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
@@ -178,7 +178,7 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 3, mobileMax: 2 }
+            burstCount: { min: 2, max: 3, mobileMin: 1, mobileMax: 2 }
         },
         fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
@@ -194,7 +194,7 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 3, mobileMax: 2 }
+            burstCount: { min: 2, max: 3, mobileMin: 1, mobileMax: 2 }
         },
         fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
@@ -210,7 +210,7 @@ export const CELEBRATION_RULES: CelebrationRule[] = [
         slowInterval: {
             minMs: 10000,
             maxMs: 15000,
-            burstCount: { min: 1, max: 3, mobileMax: 2 }
+            burstCount: { min: 2, max: 3, mobileMin: 1, mobileMax: 2 }
         },
         fastPhase: { durationMs: 20000, minMs: 400, maxMs: 1000, maxItems: 6, mobileMaxItems: 6 }
     },
