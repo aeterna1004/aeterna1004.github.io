@@ -17,6 +17,8 @@ export interface ActiveCelebration {
         burstCount?: { min: number; max: number };
     }
     fastPhase?: { durationMs: number; minMs: number; maxMs: number; maxItems?: number }
+    customSubtitle?: string
+    customQuotes?: string[]
 }
 
 // Convert rule trigger into a precise start Date for the current year/month
@@ -81,7 +83,9 @@ function getMatchedEffects(currentScreen: string): ActiveCelebration[] {
                         effect: rule.effect,
                         intensity: finalIntensity,
                         slowInterval: rule.slowInterval,
-                        fastPhase: rule.fastPhase
+                        fastPhase: rule.fastPhase,
+                        customSubtitle: rule.customSubtitle,
+                        customQuotes: rule.customQuotes
                     })
                 }
             }

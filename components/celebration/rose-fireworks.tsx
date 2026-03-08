@@ -2,18 +2,15 @@
 
 import { useEffect, useRef, useCallback } from "react"
 
-// RGB values for interpolation (Real firework coloring)
-const ROMANTIC_COLORS = [
-    { r: 244, g: 63, b: 94 },   // rose-500 (vibrant pink)
-    { r: 225, g: 29, b: 72 },   // rose-600 (crimson)
-    { r: 190, g: 18, b: 60 },   // rose-700 (ruby)
-    { r: 159, g: 18, b: 57 },   // rose-800 (deep ruby)
-    { r: 217, g: 70, b: 239 },  // fuchsia-500 (magenta)
-    { r: 192, g: 38, b: 211 },  // fuchsia-600
+const REAL_ROSE_COLORS = [
+    { r: 255, g: 127, b: 127 }, // Light Coral
+    { r: 255, g: 153, b: 153 }, // Soft Pink
+    { r: 250, g: 128, b: 114 }, // Salmon
+    { r: 220, g: 20, b: 60 },   // Crimson inner
+    { r: 255, g: 105, b: 180 }, // Hot Pink highlights
 ]
 
-// Default rocket color (Crimson)
-const ROCKET_COLOR = { r: 225, g: 29, b: 72 }
+const ROCKET_COLOR = { r: 255, g: 105, b: 180 }
 
 interface RGB {
     r: number
@@ -51,58 +48,87 @@ function getResponsiveScale(intensity: "high" | "low" = "low"): { quantityScale:
     if (typeof window === "undefined") return { quantityScale: 1, sizeScale: 1 }
 
     if (window.innerWidth < 768) {
-        // Điện thoại: Bắn nhanh (high) giảm còn một nửa (0.5), bắn chậm (low) giữ dày (0.8)
+        // Điện thoại: Bắn nhanh (high) thì giảm còn một nửa (0.5), bắn chậm (low) thì giữ khá dày (0.8)
         const qScale = intensity === "high" ? 0.5 : 0.8;
         return { quantityScale: qScale, sizeScale: 0.75 }
     }
-
     if (window.innerWidth < 1024) {
         const qScale = intensity === "high" ? 0.75 : 0.8;
         return { quantityScale: qScale, sizeScale: 0.5 }
     }
 
-    // Máy tính: Giữ nguyên 100%
     return { quantityScale: 1, sizeScale: 1 }
 }
 
-// Generate points for a heart shape
-function getHeartBurstVelocity(index: number, total: number, speedMultiplier: number): { vx: number; vy: number } {
-    const angle = (index / total) * Math.PI * 2
+// Generate points for a 5-petal flower (made of 5 rotated hearts)
+function getFlowerVelocity(index: number, total: number, speedMultiplier: number, scale: number): { vx: number; vy: number } {
+    const countPerPetal = Math.floor(total / 5) || 1
+    const petalIdx = Math.min(4, Math.floor(index / countPerPetal)) // Ensure it doesn't exceed 4
+    const rotation = petalIdx * (Math.PI * 2 / 5)
+
+    // t goes from 0 to 2pi smoothly along the edge of the heart
+    const t = ((index % countPerPetal) / countPerPetal) * Math.PI * 2
 
     // Heart curve equations
-    const x = 16 * Math.pow(Math.sin(angle), 3)
-    const y = -(13 * Math.cos(angle) - 5 * Math.cos(2 * angle) - 2 * Math.cos(3 * angle) - Math.cos(4 * angle))
+    let x = 16 * Math.pow(Math.sin(t), 3)
+    let y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))
 
-    // Normalize and scale (bigger heart)
+    // Scale heart to become a single petal
+    x *= 0.6 * scale
+    y *= 0.6 * scale
+
+    // Shift the bottom tip of the heart (which is at y=17 originally) to the origin
+    y -= 17 * 0.6 * scale
+
+    // Rotate the petal around the origin
+    const rx = x * Math.cos(rotation) - y * Math.sin(rotation)
+    const ry = x * Math.sin(rotation) + y * Math.cos(rotation)
+
     return {
-        vx: x * speedMultiplier * 0.18,
-        vy: y * speedMultiplier * 0.18
+        vx: rx * speedMultiplier * 0.18,
+        vy: ry * speedMultiplier * 0.18
     }
 }
 
 function createBurst(cx: number, cy: number, count: number, speedMultiplier: number): BurstParticle[] {
     const particles: BurstParticle[] = []
 
-    // 70% heart outline, 30% dust
-    const heartCount = Math.floor(count * 0.7)
-    const dustCount = count - heartCount
+    const outerCount = Math.floor(count * 0.45)
+    const innerCount = Math.floor(count * 0.25)
+    const dustCount = count - outerCount - innerCount
 
-    // Slower decay for a more romantic, lingering "weeping willow" feeling
-    const baseDecayHeart = 0.004
+    const baseDecayHeart = 0.003
     const baseDecayDust = 0.005
 
-    // Heart particles
-    for (let i = 0; i < heartCount; i++) {
-        const vel = getHeartBurstVelocity(i, heartCount, speedMultiplier * 1.5)
+    // Outer Petals Layer
+    for (let i = 0; i < outerCount; i++) {
+        const vel = getFlowerVelocity(i, outerCount, speedMultiplier * 1.5, 1.0)
         particles.push({
-            x: cx,
-            y: cy,
-            vx: vel.vx,
-            vy: vel.vy,
+            x: cx, y: cy,
+            vx: vel.vx, vy: vel.vy,
             size: Math.random() * 2 + 1.5,
-            color: ROMANTIC_COLORS[Math.floor(Math.random() * ROMANTIC_COLORS.length)],
+            color: REAL_ROSE_COLORS[Math.floor(Math.random() * REAL_ROSE_COLORS.length)],
             alpha: 1,
-            decay: Math.random() * 0.003 + baseDecayHeart, // Falls much slower now
+            decay: Math.random() * 0.002 + baseDecayHeart,
+            phase: "burst",
+            trail: [],
+            swayOffset: Math.random() * Math.PI * 2
+        })
+    }
+
+    // Inner Petals Layer (Smaller, rotated slightly for natural look)
+    for (let i = 0; i < innerCount; i++) {
+        // We add a tiny offset to the rotation inside getFlowerVelocity by shifting the index
+        const vel = getFlowerVelocity(i, innerCount, speedMultiplier * 1.5, 0.4)
+        particles.push({
+            x: cx, y: cy,
+            // Rotate the inner flower by half a petal (36 degrees = Math.PI / 5)
+            vx: vel.vx * Math.cos(Math.PI / 5) - vel.vy * Math.sin(Math.PI / 5),
+            vy: vel.vx * Math.sin(Math.PI / 5) + vel.vy * Math.cos(Math.PI / 5),
+            size: Math.random() * 1.5 + 1.0,
+            color: REAL_ROSE_COLORS[4], // Hot Pink highlight inner
+            alpha: 1,
+            decay: Math.random() * 0.002 + baseDecayHeart,
             phase: "burst",
             trail: [],
             swayOffset: Math.random() * Math.PI * 2
@@ -120,7 +146,7 @@ function createBurst(cx: number, cy: number, count: number, speedMultiplier: num
             vx: Math.cos(angle) * speed,
             vy: Math.sin(angle) * speed,
             size: Math.random() * 1.5 + 0.5,
-            color: ROMANTIC_COLORS[Math.floor(Math.random() * ROMANTIC_COLORS.length)],
+            color: REAL_ROSE_COLORS[Math.floor(Math.random() * REAL_ROSE_COLORS.length)],
             alpha: 1,
             decay: Math.random() * 0.003 + baseDecayDust,
             phase: "burst",
@@ -132,7 +158,7 @@ function createBurst(cx: number, cy: number, count: number, speedMultiplier: num
     return particles
 }
 
-interface RomanticFireworksProps {
+interface RoseFireworksProps {
     isActive: boolean
     intensity?: "high" | "low"
     slowInterval?: {
@@ -144,7 +170,7 @@ interface RomanticFireworksProps {
     onComplete?: () => void
 }
 
-export function RomanticFireworks({ isActive, intensity = "low", slowInterval, fastPhase, onComplete }: RomanticFireworksProps) {
+export function RoseFireworks({ isActive, intensity = "low", slowInterval, fastPhase, onComplete }: RoseFireworksProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const rocketsRef = useRef<Rocket[]>([])
     const particlesRef = useRef<BurstParticle[]>([])
@@ -176,8 +202,6 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
         resizeCanvas()
         window.addEventListener("resize", resizeCanvas)
 
-        // Chỉ xóa trạng thái cũ nếu đây là lần đầu tiên được kích hoạt (isActive: false -> true)
-        // Nếu chỉ đổi intensity (Nhanh <-> Chậm), chúng ta giữ nguyên để pháo hoa đang bay không bị mất
         if (isFirstActiveRef.current) {
             rocketsRef.current = []
             particlesRef.current = []
@@ -191,38 +215,33 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
             const w = window.innerWidth
             const h = window.innerHeight
 
-            // Launch from sides to frame the center
             const isLeftSide = side ? (side === "left") : Math.random() > 0.5
             let startX = isLeftSide
-                ? w * 0.1 + Math.random() * (w * 0.3)  // Trái: 10% - 40%
-                : w * 0.6 + Math.random() * (w * 0.3)  // Phải: 60% - 90%
+                ? w * 0.1 + Math.random() * (w * 0.3)
+                : w * 0.6 + Math.random() * (w * 0.3)
 
-            // Arch inward
             let arcVx = isLeftSide ? (Math.random() * 2 + 1) : -(Math.random() * 2 + 1)
 
             rocketsRef.current.push({
                 x: startX,
                 y: h + 10,
                 vx: arcVx * sizeScale,
-                vy: -(Math.random() * 4 + 11) * sizeScale, // Bắn cao hơn và nhanh hơn nếu sizeScale to
+                vy: -(Math.random() * 5 + 13) * sizeScale,
                 size: 2.5 * sizeScale,
                 color: ROCKET_COLOR,
                 alpha: 1,
                 trail: [],
-                targetY: h * 0.1 + Math.random() * h * 0.3 // Explode high around timer
+                targetY: h * 0.15 + Math.random() * h * 0.3
             })
         }
 
-        // INITIAL BARRAGE: 4 massive opening shots to celebrate the exact anniversary moment
-        // Only trigger this barrage if we are precisely at the high-intensity hour G!
         if (intensity === "high") {
             launchRocket()
             setTimeout(() => launchRocket(), 300)
             setTimeout(() => launchRocket(), 600)
             setTimeout(() => launchRocket(), 1000)
-            setTimeout(() => launchRocket(), 1500) // The "grand finale" of the opening
+            setTimeout(() => launchRocket(), 1500)
         } else {
-            // Optional: Start with just 1 rocket gracefully if it's the ambient phase
             setTimeout(() => launchRocket(), 500)
         }
 
@@ -232,22 +251,17 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
             const w = window.innerWidth
             const h = window.innerHeight
             const elapsed = timestamp - startTimeRef.current
-
-            // Delta time calculation for Frame-Rate Independence
-            // Caps max delta at 50ms to prevent massive jumps if tab is inactive
             const dt = Math.min(timestamp - lastTime, 50)
             lastTime = timestamp
-            const dtRatio = dt / 16.66 // Baseline 60fps is 16.66ms per frame
+            const dtRatio = dt / 16.66
 
             ctx.clearRect(0, 0, w, h)
             ctx.globalCompositeOperation = "source-over"
 
-            // PACING LOGIC
             let launchInterval = 9999999
             let maxRockets = 2
 
             if (intensity === "high") {
-                // Sử dụng cấu hình từ constant nếu có, nếu không thì mặc định 15s mở màn xối xả
                 const duration = fastPhase ? fastPhase.durationMs : 15000
                 const isOpeningPhase = elapsed < duration
 
@@ -261,7 +275,6 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
                         maxRockets = Math.max(1, Math.floor(6 * quantityScale))
                     }
                 } else {
-                    // Sau khi hết hạn fastPhase thì hạ nhiệt dần nhưng vẫn duy trì ở mức vừa phải làm nền
                     launchInterval = (2000 + Math.random() * 1500) / quantityScale
                     maxRockets = Math.max(1, Math.floor(2 * quantityScale))
                 }
@@ -269,7 +282,6 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
                 if (slowInterval) {
                     const range = slowInterval.maxMs - slowInterval.minMs
                     launchInterval = (slowInterval.minMs + Math.random() * range) / quantityScale
-                    // Nếu có burstCount, cho phép số lượng rocket tối đa cao hơn để chứa đủ chùm
                     const baseMax = slowInterval.burstCount ? slowInterval.burstCount.max + 1 : 1
                     maxRockets = Math.max(1, Math.floor(baseMax * quantityScale))
                 } else {
@@ -279,40 +291,34 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
             }
 
             if (timestamp - lastLaunchRef.current > launchInterval) {
-                if (particlesRef.current.length < 400) {
+                if (particlesRef.current.length < 3000) {
                     if (intensity === "low" && slowInterval?.burstCount) {
-                        // BẮN THEO ĐỢT (BURST): Bắn một chùm nhiều quả cùng lúc (staggered)
-                        // Đảm bảo không bắn chung một chỗ bằng cách đảo bên (Trái/Phải)
                         const count = Math.floor(Math.random() * (slowInterval.burstCount.max - slowInterval.burstCount.min + 1)) + slowInterval.burstCount.min
                         for (let i = 0; i < count; i++) {
                             setTimeout(() => {
-                                if (rocketsRef.current.length < 10) { // Giới hạn an toàn
+                                if (rocketsRef.current.length < 10) {
                                     const side = i % 2 === 0 ? "left" : "right"
                                     launchRocket(side)
                                 }
-                            }, i * 450 + Math.random() * 200) // Giãn cách nhẹ giữa các quả trong chùm
+                            }, i * 450 + Math.random() * 200)
                         }
                     } else if (rocketsRef.current.length < maxRockets) {
-                        // BẮN ĐƠN (STREAM): Bắn từng quả một (hoặc nhanh liên tục ở high intensity)
                         launchRocket()
                     }
                 }
                 lastLaunchRef.current = timestamp
             }
 
-            // Update Rockets
             for (let i = rocketsRef.current.length - 1; i >= 0; i--) {
                 const r = rocketsRef.current[i]
 
-                // Only record trail every frame is fine, or we can cap trail length.
                 r.trail.push({ x: r.x, y: r.y })
                 if (r.trail.length > 5) r.trail.shift()
 
                 r.x += r.vx * dtRatio
                 r.y += r.vy * dtRatio
-                r.vy += 0.12 * dtRatio // Gravity
+                r.vy += 0.12 * dtRatio
 
-                // Draw rocket trail
                 if (r.trail.length > 1) {
                     ctx.beginPath()
                     ctx.moveTo(r.trail[0].x, r.trail[0].y)
@@ -325,21 +331,17 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
                     ctx.stroke()
                 }
 
-                // Rocket head
                 ctx.beginPath()
                 ctx.arc(r.x, r.y, r.size * 1.5, 0, Math.PI * 2)
                 ctx.fillStyle = `rgba(${r.color.r}, ${r.color.g}, ${r.color.b}, 1)`
                 ctx.fill()
 
                 if (r.vy >= -1 || r.y <= r.targetY) {
-                    // Use a blend for particle count: some fixed, some scaled.
-                    // sizeScale on mobile is 1.5, so 110 * 1.5 = 165 particles.
-                    particlesRef.current.push(...createBurst(r.x, r.y, 110 * sizeScale, 3 * sizeScale))
+                    particlesRef.current.push(...createBurst(r.x, r.y, 450 * sizeScale, 3.5 * sizeScale))
                     rocketsRef.current.splice(i, 1)
                 }
             }
 
-            // Update Particles
             for (let i = particlesRef.current.length - 1; i >= 0; i--) {
                 const p = particlesRef.current[i]
 
@@ -351,7 +353,6 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
                     p.x += p.vx * dtRatio
                     p.y += p.vy * dtRatio
 
-                    // Exponential drag mathematically scaled by timeframe
                     const drag = Math.pow(0.92, dtRatio)
                     p.vx *= drag
                     p.vy *= drag
@@ -364,14 +365,13 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
 
                     p.swayOffset += 0.03 * dtRatio
                     p.x += p.vx * dtRatio + Math.sin(p.swayOffset) * 0.4 * dtRatio
-                    p.vy += 0.02 * dtRatio // Float down acceleration
-                    if (p.vy > 1.8) p.vy = 1.8 // Gentle terminal velocity
+                    p.vy += 0.02 * dtRatio
+                    if (p.vy > 1.8) p.vy = 1.8
                     p.y += p.vy * dtRatio
                 }
 
                 p.alpha -= p.decay * dtRatio
 
-                // MAGIC FADE TO WHITE
                 let cr = p.color.r
                 let cg = p.color.g
                 let cb = p.color.b
@@ -386,7 +386,6 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
                 const rgbaCore = `rgba(${Math.floor(cr)}, ${Math.floor(cg)}, ${Math.floor(cb)}, ${p.alpha})`
                 const rgbaTrail = `rgba(${Math.floor(cr)}, ${Math.floor(cg)}, ${Math.floor(cb)}, ${Math.min(1, p.alpha * 1.5)})`
 
-                // Draw Willow Line 
                 if (p.trail.length > 1 && p.alpha > 0) {
                     ctx.beginPath()
                     ctx.moveTo(p.trail[0].x, p.trail[0].y)
@@ -399,7 +398,6 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
                     ctx.stroke()
                 }
 
-                // Solid glowing core
                 if (p.alpha > 0) {
                     ctx.beginPath()
                     ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2)
@@ -421,7 +419,6 @@ export function RomanticFireworks({ isActive, intensity = "low", slowInterval, f
         return () => {
             cancelAnimationFrame(animFrameRef.current)
             window.removeEventListener("resize", resizeCanvas)
-            // Khi isActive chuyển sang false, ta reset lại flag để lần sau có hiệu ứng mới
             if (!isActive) {
                 isFirstActiveRef.current = true
             }

@@ -4,16 +4,26 @@ import { useEffect, useState } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 
 import { QUOTES } from "@/lib/constants"
+import { useCelebration } from "@/hooks/useCelebration"
 
 export function LoveQuote() {
+  const { activeEffects } = useCelebration("timer")
   const [idx, setIdx] = useState(0)
+
+  // Ưu tiên dùng list quote của sự kiện (Valentine, 8/3...) nếu có
+  const currentQuotes = activeEffects.find(e => e.customQuotes)?.customQuotes || QUOTES
+
+  useEffect(() => {
+    // Reset index nếu chuyển từ list này sang list khác có độ dài khác nhau cho an toàn
+    setIdx(0)
+  }, [currentQuotes.length])
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setIdx((p) => (p + 1) % QUOTES.length)
+      setIdx((p) => (p + 1) % currentQuotes.length)
     }, 8000)
     return () => clearInterval(interval)
-  }, [])
+  }, [currentQuotes.length])
 
   return (
     <section className="flex flex-col items-center gap-4 px-6 sm:px-10 w-full max-w-xl mx-auto">
@@ -27,7 +37,7 @@ export function LoveQuote() {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.5 }}
           >
-            {`\u201C${QUOTES[idx]}\u201D`}
+            {`\u201C${currentQuotes[idx]}\u201D`}
           </motion.p>
         </AnimatePresence>
       </div>

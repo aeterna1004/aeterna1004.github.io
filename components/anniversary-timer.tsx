@@ -5,6 +5,7 @@ import { motion } from "framer-motion"
 import { Heart } from "lucide-react"
 
 import { ANNIVERSARY_DATE, ANNIVERSARY_DISPLAY_TEXT, PARTNER_1_NAME, PARTNER_2_NAME } from "@/lib/constants"
+import { useCelebration } from "@/hooks/useCelebration"
 
 const START_DATE = new Date(ANNIVERSARY_DATE)
 interface TimeUnit {
@@ -59,6 +60,10 @@ export function AnniversaryTimer() {
     calculateTimeDiff(START_DATE)
   )
   const [mounted, setMounted] = useState(false)
+  const { activeEffects } = useCelebration("timer")
+
+  // Tìm subtitle từ hiệu ứng đang hoạt động (ví dụ 8/3, Valentine...)
+  const activeSubtitle = activeEffects.find(e => e.customSubtitle)?.customSubtitle || "Bên nhau được"
 
   useEffect(() => {
     setMounted(true)
@@ -85,7 +90,7 @@ export function AnniversaryTimer() {
           {`${PARTNER_1_NAME} & ${PARTNER_2_NAME}`}
         </h1>
         <p className="text-sm sm:text-base text-rose-400 font-sans opacity-90">
-          {"B\u00EAn nhau \u0111\u01B0\u1EE3c"}
+          {activeSubtitle}
         </p>
       </motion.div>
 

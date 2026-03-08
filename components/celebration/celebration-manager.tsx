@@ -2,10 +2,12 @@
 
 import { CelebrationEffect } from "@/lib/constants"
 import { RomanticFireworks } from "./romantic-fireworks"
+import { RoseFireworks } from "./rose-fireworks"
 import { ActiveCelebration } from "@/hooks/useCelebration"
 
 const EFFECT_COMPONENTS: Record<CelebrationEffect, React.FC<any>> = {
     "romantic-fireworks": RomanticFireworks,
+    "rose-fireworks": RoseFireworks,
 }
 
 interface CelebrationManagerProps {
