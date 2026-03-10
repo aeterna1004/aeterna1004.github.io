@@ -28,9 +28,9 @@ You may freely create or modify files in these directories:
 > [!WARNING]
 > DO NOT commit or retain build artifacts. Directories like `out/`, `.next/`, or `node_modules/` that are generated dynamically during `npm run build` or `npm install` must be ignored or deleted. 
 > 
-> **Important:** The `next-env.d.ts` file is also automatically modified by Next.js during build/dev. Do not report it as a changed source file. If it gets modified in your Git tree after running a build, run `git checkout next-env.d.ts` to revert it to keep the commit history clean.
+> **Important:** The `next-env.d.ts` file is automatically modified by Next.js during build/dev. If it gets modified in your Git tree after running a build, run `git checkout next-env.d.ts` to revert it to keep the commit history clean.
 > 
-> **CRITICAL RULE ON TESTING:** The AI must NEVER run `npm run build` just to verify code. Doing so creates dozens of changed files (in `out/` and `next-env.d.ts`) that pollute the user's workspace. If you need to test the code visually, simply navigate to `http://localhost:3000` assuming the user already has `npm run dev` running. If the server is not running, do not attempt to compile or build—let the user test it manually.
+> **TESTING GUIDANCE:** You can now run `npm run build` locally to verify the production build, as build artifacts like `out/` are now properly ignored in `.gitignore`. However, for quick visual testing, navigating to `http://localhost:3000` (if `npm run dev` is running) is still preferred to save time.
 
 ## Visual Effects Physics & Math
 
